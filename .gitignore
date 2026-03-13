@@ -1,12 +1,16 @@
 # Local video and skeleton storage
-videos/
-skeletons/
-skeleton_videos/
+# videos/
+# skeleton_videos/
+# models/
+# !skeletons/
+# skeletons/*.avi
+# skeletons/*.mp4
 
 # Cache and temporary data
-cache.json
 bisig.db
 *.log
+server.log
+server_final.log
 
 # Python
 __pycache__/
