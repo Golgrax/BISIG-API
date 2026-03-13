@@ -1,0 +1,19 @@
+# Local video storage
+videos/
+
+# Cache and temporary data
+cache.json
+bisig.db
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+
+# IDEs
+.vscode/
+.idea/

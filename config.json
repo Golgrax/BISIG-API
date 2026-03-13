@@ -1,0 +1,8 @@
+{
+  "api_name": "BISIG Sign Language API",
+  "version": "1.0.0",
+  "s3_base_url": "https://pocketsign.s3-us-west-2.amazonaws.com/",
+  "storage_dir": "/workspaces/BISIG-API/videos",
+  "db_url": "sqlite:///./bisig.db",
+  "fallback_to_letters": true
+}
