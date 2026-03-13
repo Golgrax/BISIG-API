@@ -1,5 +1,7 @@
-# Local video storage
+# Local video and skeleton storage
 videos/
+skeletons/
+skeleton_videos/
 
 # Cache and temporary data
 cache.json

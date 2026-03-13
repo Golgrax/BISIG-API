@@ -5,3 +5,6 @@ aiosqlite
 httpx
 aiofiles
 python-multipart
+mediapipe
+opencv-contrib-python-headless
+numpy

@@ -1,52 +1,63 @@
 # BISIG Sign Language API
 
-A high-performance REST API designed to translate text into sign language video sequences.
+A high-performance REST API designed to translate text into sign language video sequences and high-fidelity skeleton datasets.
 
 ## 🚀 Features
 
 - **Text-to-Video Translation**: Translates text phrases into a sequence of `.mp4` video URLs.
-- **Smart Fallback**: If a video for a specific word doesn't exist, the API automatically falls back to letter-by-letter spelling.
-- **Auto-Download & Local Caching**: Videos are automatically fetched from an external S3 bucket, saved to local storage (`/videos`), and served locally for faster future access and offline reliability.
-- **JSON Metadata**: Uses a simple, human-readable `cache.json` for persistence.
-- **CORS Support**: Ready for integration with any web frontend.
-- **Proxy-Aware URLs**: Automatically detects the public host (e.g., GitHub Codespaces) to provide valid, playable URLs.
+- **Full Sequence Skeleton Rendering**: Use `format=full_skeleton_video` to get a single, continuous video of the entire phrase with smooth transitions.
+- **Pose Interpolation**: Automatically calculates "bridge" frames between words to prevent teleporting hands and ensure fluid movement.
+- **High-Fidelity Tracking**: 
+    - **Face Expressions**: Tracks lips, eyes, and eyebrows to capture the non-verbal nuances of sign language.
+    - **Color-Coded Fingers**: Each finger is uniquely colored (Yellow, Cyan, Magenta, Green, White) for maximum clarity in finger-spelling.
+    - **Hand Stabilization**: Advanced spatial verification to fix AI handedness-swap glitches.
+- **Skeleton Dataset Extraction**: Use `format=skeleton` to get raw 3D landmark coordinates for AI training and motion analysis.
+- **Smart Fallback**: Automatically falls back to letter-by-letter spelling if a specific word video is missing.
+- **Auto-Download & Local Caching**: Videos and AI-generated skeletons are cached locally for near-instant subsequent requests.
+- **Proxy-Aware URLs**: Automatically detects public hosts (e.g., GitHub Codespaces) for valid media playback.
 
 ## 🛠️ API Endpoints
 
-### `GET /translate?text=...`
-Translates text into a sequence of video URLs.
-- **Example**: `/translate?text=hello+world`
-- **Response**:
-```json
-{
-  "original_text": "hello world",
-  "videos": [
-    { "word": "hello", "url": "https://.../videos/hello.mp4", "type": "word" },
-    { "word": "w", "url": "https://.../videos/w.mp4", "type": "letter" },
-    ...
-  ]
-}
-```
+### `GET /translate?text=...&format=...`
+Translates text into a sequence of video URLs or skeleton datasets.
 
-### `GET /health`
-Returns the status of the API.
+- **Parameters**:
+  - `text`: (Required) The phrase to translate.
+  - `format`: 
+    - `video` (Default): Returns a list of original human sign language URLs.
+    - `skeleton`: Returns raw JSON coordinates (Pose, Hands, Face) for every frame.
+    - `skeleton_video`: Returns a rendered stick-figure video for each individual word.
+    - `full_skeleton_video`: Returns one single combined video for the entire phrase with smooth transitions.
+
+- **Example (Full Sequence)**: `/translate?text=hello+world&format=full_skeleton_video`
 
 ## 📁 Project Structure
 
 - `main.py`: FastAPI application and endpoint logic.
-- `services/video_service.py`: Core logic for fetching, downloading, and caching.
-- `videos/`: Local storage for downloaded `.mp4` files (ignored by git).
-- `cache.json`: Persistence for word existence status (ignored by git).
-- `config.json`: Configuration settings (S3 URL, local paths).
+- `services/video_service.py`: Core logic for caching and sequence combination.
+- `services/skeleton_service.py`: AI logic for 3D keypoint extraction, interpolation, and rendering.
+- `videos/`: Local storage for source `.mp4` files.
+- `skeletons/`: Cache for extracted 3D landmark JSON data.
+- `skeleton_videos/`: Cache for rendered stick-figure videos (`.avi`).
+- `models/`: Storage for MediaPipe AI model files (`pose`, `hand`, `face`).
 
 ## ⚡ Setup & Run
 
-1. Install dependencies:
+1. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
-2. Start the server:
+2. **Start the server**:
    ```bash
    export PYTHONPATH=$PYTHONPATH:.
-   uvicorn main:app --host 0.0.0.0 --port 8000
+   python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
    ```
+
+## 🎨 Skeleton Color Guide
+- **Body**: Vibrant Neon Green
+- **Face**: Soft Gray (Contour mapping)
+- **Thumb**: Yellow
+- **Index**: Cyan
+- **Middle**: Magenta
+- **Ring**: Green
+- **Pinky**: White
